@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <main class="page">
+        <section class="hero">
+            <h1>{{ title }}</h1>
+            <p>
+                Local test harness for the FastAPI chess bot backend. The UI is intentionally
+                simple for this scaffolding step and will later connect to real game/session logic.
+            </p>
+
+            <div class="actions">
+                <button type="button" onclick="fetchHealth()">Check Health</button>
+                <button type="button" class="secondary" onclick="hitPlaceholder('/api/game/start')">Start Placeholder Game</button>
+                <button type="button" class="secondary" onclick="hitPlaceholder('/api/book/status', 'GET')">Check Book Placeholder</button>
+            </div>
+
+            <div class="status">
+                Backend endpoints are wired and ready for the real implementation pass.
+            </div>
+        </section>
+
+        <section class="grid">
+            <article class="card">
+                <h2>Planned backend pieces</h2>
+                <p>PGN parser, opening book generator, probability controller, Stockfish fallback, and session manager.</p>
+            </article>
+            <article class="card">
+                <h2>Testing focus</h2>
+                <p>Use this page to confirm the app boots, templates load, static assets serve, and placeholder routes respond.</p>
+            </article>
+        </section>
+
+        <section class="card">
+            <h2>Response</h2>
+            <pre id="output">No request sent yet.</pre>
+        </section>
+    </main>
+    <script src="/static/app.js"></script>
+</body>
+</html>
