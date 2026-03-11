@@ -1,0 +1,9 @@
+{
+  "metadata": {
+    "name": "White Repertoire Book",
+    "max_depth_ply": 24,
+    "side": "white",
+    "source_file": "data/repertoire_db/master_repertoire.pgn"
+  },
+  "positions": {}
+}

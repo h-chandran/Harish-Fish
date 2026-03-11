@@ -1,13 +1,25 @@
+from pathlib import Path
+import sys
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
 from app.core.config import get_settings
+from app.services.opening_book import OpeningBookGenerator
 
 
 def main() -> None:
-    """Placeholder CLI entrypoint for future opening-book generation."""
+    """Build the White opening book from the configured master PGN."""
     settings = get_settings()
-    print(
-        "Opening book generation is not implemented yet.\n"
-        f"Master PGN path: {settings.master_pgn_path}\n"
-        f"Generated book path: {settings.generated_book_path}"
+    generator = OpeningBookGenerator(max_depth_ply=settings.book_max_depth_ply)
+
+    source_path = Path(settings.master_pgn_path)
+    output_path = Path(settings.generated_book_path)
+    generator.build(
+        source_path=source_path,
+        output_path=output_path,
+        max_depth_ply=settings.book_max_depth_ply,
     )
 
 

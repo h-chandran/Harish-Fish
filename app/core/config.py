@@ -28,6 +28,7 @@ class Settings(BaseSettings):
         default=BASE_DIR / "data" / "generated" / "white_opening_book.json",
         alias="GENERATED_BOOK_PATH",
     )
+    book_max_depth_ply: int = Field(default=24, alias="BOOK_MAX_DEPTH_PLY")
     stockfish_path: str | None = Field(default=None, alias="STOCKFISH_PATH")
     stockfish_skill_level: int = Field(default=18, alias="STOCKFISH_SKILL_LEVEL")
     stockfish_elo: int = Field(default=2400, alias="STOCKFISH_ELO")
