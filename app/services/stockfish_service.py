@@ -35,6 +35,7 @@ class StockfishService:
     def __init__(self, config: StockfishConfig) -> None:
         self.config = config
         self._engine: chess.engine.SimpleEngine | None = None
+        self.last_error: str | None = None
 
     def is_configured(self) -> bool:
         return self.config.engine_path is not None
@@ -43,10 +44,12 @@ class StockfishService:
         if self._engine is not None:
             return
         if self.config.engine_path is None:
+            self.last_error = "Stockfish binary is not configured."
             raise StockfishConfigurationError(
                 "Stockfish binary is not configured. Set STOCKFISH_PATH to a valid executable."
             )
         if not self.config.engine_path.is_file():
+            self.last_error = f"Stockfish binary was not found at: {self.config.engine_path}"
             raise StockfishConfigurationError(
                 f"Stockfish binary was not found at: {self.config.engine_path}"
             )
@@ -54,20 +57,27 @@ class StockfishService:
         try:
             self._engine = chess.engine.SimpleEngine.popen_uci(str(self.config.engine_path))
         except FileNotFoundError as exc:
+            self.last_error = f"Stockfish binary was not found at: {self.config.engine_path}"
             raise StockfishConfigurationError(
                 f"Stockfish binary was not found at: {self.config.engine_path}"
             ) from exc
         except OSError as exc:
+            self.last_error = f"Failed to start Stockfish from: {self.config.engine_path}"
             raise StockfishConfigurationError(
                 f"Failed to start Stockfish from: {self.config.engine_path}"
             ) from exc
 
         self._configure_engine()
+        self.last_error = None
 
     def close(self) -> None:
         if self._engine is not None:
             self._engine.quit()
             self._engine = None
+
+    @property
+    def is_ready(self) -> bool:
+        return self._engine is not None
 
     def get_best_move(self, board: chess.Board) -> chess.Move:
         if board.turn != chess.WHITE:

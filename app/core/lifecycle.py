@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from app.core.config import get_settings
 from app.services.book_controller import BookController, WhiteOpeningBook
 from app.services.bot_move_service import BotMoveService
+from app.services.game_manager import GameSessionManager
 from app.services.stockfish_service import StockfishConfig, StockfishService
 
 
@@ -18,9 +19,13 @@ async def lifespan(app: FastAPI):
     app.state.book_controller = None
     app.state.stockfish_service = None
     app.state.bot_move_service = None
+    app.state.session_manager = None
 
     if settings.generated_book_path.is_file():
         app.state.opening_book = WhiteOpeningBook.load(settings.generated_book_path)
+        app.state.book_controller = BookController(book=app.state.opening_book)
+    else:
+        app.state.opening_book = WhiteOpeningBook(metadata={}, positions={})
         app.state.book_controller = BookController(book=app.state.opening_book)
 
     stockfish_service = StockfishService(
@@ -39,6 +44,10 @@ async def lifespan(app: FastAPI):
     if app.state.book_controller is not None:
         app.state.bot_move_service = BotMoveService(
             book_controller=app.state.book_controller,
+            stockfish_service=stockfish_service,
+        )
+        app.state.session_manager = GameSessionManager(
+            opening_book=app.state.opening_book,
             stockfish_service=stockfish_service,
         )
 
