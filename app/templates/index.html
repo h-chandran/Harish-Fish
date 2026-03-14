@@ -4,42 +4,76 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
     <main class="page">
         <section class="hero">
             <h1>{{ title }}</h1>
-            <p>
-                Local test harness for the FastAPI chess bot backend. The UI is intentionally
-                simple for this scaffolding step and will later connect to real game/session logic.
-            </p>
+            <p>Local-only browser client for testing the White bot end to end. Human always plays Black.</p>
+        </section>
 
-            <div class="actions">
-                <button type="button" onclick="fetchHealth()">Check Health</button>
-                <button type="button" class="secondary" onclick="hitPlaceholder('/api/game/start')">Start Placeholder Game</button>
-                <button type="button" class="secondary" onclick="hitPlaceholder('/api/book/status', 'GET')">Check Book Placeholder</button>
-            </div>
+        <section class="grid layout">
+            <section class="card controls">
+                <h2>Game Controls</h2>
+                <div class="stack">
+                    <label class="checkbox-row">
+                        <input id="bot-first" type="checkbox" checked>
+                        <span>Bot makes White's first move automatically</span>
+                    </label>
+                    <div class="actions">
+                        <button type="button" id="new-game-btn">Create New Game</button>
+                        <button type="button" class="secondary" id="reset-game-btn">Reset Current Game</button>
+                        <button type="button" class="secondary" id="health-btn">Check Health</button>
+                    </div>
+                </div>
 
-            <div class="status">
-                Backend endpoints are wired and ready for the real implementation pass.
-            </div>
+                <h2>Black Move</h2>
+                <p class="muted">Enter UCI such as <code>e7e5</code>, or click a source square and destination square on the board.</p>
+                <div class="move-entry">
+                    <input id="black-move-input" type="text" placeholder="e7e5" maxlength="5" autocomplete="off">
+                    <button type="button" id="submit-black-btn">Play Black Move</button>
+                </div>
+                <p class="muted" style="margin-top: 0.25rem;">Bot (White) moves automatically after you play Black.</p>
+
+                <div class="stack compact">
+                    <div><strong>Game ID:</strong> <span id="game-id">No game yet</span></div>
+                    <div><strong>Selected squares:</strong> <span id="selected-squares">none</span></div>
+                    <div><strong>Current FEN:</strong></div>
+                    <pre id="fen-display">No position loaded.</pre>
+                </div>
+            </section>
+
+            <section class="card board-panel">
+                <div class="board-header">
+                    <h2>Board</h2>
+                    <div id="turn-indicator" class="pill">Waiting for game</div>
+                </div>
+                <div id="board" class="board" aria-label="Chess board"></div>
+            </section>
         </section>
 
         <section class="grid">
-            <article class="card">
-                <h2>Planned backend pieces</h2>
-                <p>PGN parser, opening book generator, probability controller, Stockfish fallback, and session manager.</p>
-            </article>
-            <article class="card">
-                <h2>Testing focus</h2>
-                <p>Use this page to confirm the app boots, templates load, static assets serve, and placeholder routes respond.</p>
-            </article>
+            <section class="card">
+                <h2>Move List</h2>
+                <ol id="move-list" class="move-list"></ol>
+            </section>
+            <section class="card">
+                <h2>Latest Bot Move</h2>
+                <div class="stack compact">
+                    <div><strong>Move:</strong> <span id="bot-move-display">none</span></div>
+                    <div><strong>Source:</strong> <span id="bot-source-display">none</span></div>
+                    <div><strong>Book probability:</strong> <span id="bot-probability-display">n/a</span></div>
+                </div>
+            </section>
         </section>
 
         <section class="card">
-            <h2>Response</h2>
-            <pre id="output">No request sent yet.</pre>
+            <h2>Status</h2>
+            <pre id="status-output">Ready.</pre>
         </section>
     </main>
     <script src="/static/app.js"></script>

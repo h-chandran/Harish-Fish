@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from app.api.routes import router
-from app.core.config import get_settings
+from app.core.config import BASE_DIR, get_settings
 from app.core.lifecycle import lifespan
 
 def create_app() -> FastAPI:
@@ -22,7 +22,7 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    app.mount("/static", StaticFiles(directory="app/static"), name="static")
+    app.mount("/static", StaticFiles(directory=str(BASE_DIR / "app" / "static")), name="static")
     app.include_router(router)
     return app
 

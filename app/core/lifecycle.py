@@ -16,6 +16,7 @@ async def lifespan(app: FastAPI):
     settings = get_settings()
     app.state.services_ready = False
     app.state.opening_book = None
+    app.state.opening_book_loaded = False
     app.state.book_controller = None
     app.state.stockfish_service = None
     app.state.bot_move_service = None
@@ -23,6 +24,7 @@ async def lifespan(app: FastAPI):
 
     if settings.generated_book_path.is_file():
         app.state.opening_book = WhiteOpeningBook.load(settings.generated_book_path)
+        app.state.opening_book_loaded = True
         app.state.book_controller = BookController(book=app.state.opening_book)
     else:
         app.state.opening_book = WhiteOpeningBook(metadata={}, positions={})

@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
+from app.core.config import BASE_DIR
 from app.models.schemas import (
     BotMoveRequest,
     BotMoveResponse,
@@ -17,17 +18,17 @@ from app.services.game_manager import InvalidMoveError, SessionNotFoundError
 from app.services.stockfish_service import StockfishConfigurationError
 
 router = APIRouter()
-templates = Jinja2Templates(directory="app/templates")
+templates = Jinja2Templates(directory=str(BASE_DIR / "app" / "templates"))
 
 
 @router.get("/health", response_model=HealthResponse, tags=["system"])
 async def health_check(request: Request) -> HealthResponse:
     """Basic health endpoint for local development."""
-    opening_book = getattr(request.app.state, "opening_book", None)
+    opening_book_loaded = bool(getattr(request.app.state, "opening_book_loaded", False))
     stockfish_service = getattr(request.app.state, "stockfish_service", None)
     return HealthResponse(
         status="ok",
-        opening_book_loaded=opening_book is not None,
+        opening_book_loaded=opening_book_loaded,
         stockfish_ready=bool(stockfish_service and stockfish_service.is_ready),
     )
 

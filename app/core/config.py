@@ -1,7 +1,7 @@
 from functools import lru_cache
 from pathlib import Path
 
-from pydantic import Field
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -35,6 +35,13 @@ class Settings(BaseSettings):
     stockfish_move_time_ms: int = Field(default=500, alias="STOCKFISH_MOVE_TIME_MS")
     stockfish_skill_level: int | None = Field(default=None, alias="STOCKFISH_SKILL_LEVEL")
     stockfish_limit_strength: bool = Field(default=True, alias="STOCKFISH_LIMIT_STRENGTH")
+
+    @field_validator("stockfish_skill_level", mode="before")
+    @classmethod
+    def empty_str_to_none(cls, v: object) -> int | None:
+        if v == "" or v is None:
+            return None
+        return v
     stockfish_elo: int = Field(default=2400, alias="STOCKFISH_ELO")
     book_decay_percent: int = Field(default=10, alias="BOOK_DECAY_PERCENT")
     book_min_probability: int = Field(default=0, alias="BOOK_MIN_PROBABILITY")

@@ -54,24 +54,40 @@ The project now includes:
 
 ## Quick Start
 
-1. Create and activate a Python 3.11 virtual environment.
-2. Install dependencies:
+**Run all commands from the project root** (`Harish-Fish`), not from inside `venv`. Otherwise `requirements.txt` won’t be found and `uvicorn` won’t be available.
 
-```bash
-pip install -r requirements.txt
-```
+1. Create a virtual environment (once), then activate it from the project root:
+
+   ```powershell
+   cd "C:\Users\Haris\OneDrive\Documents\GitHub\Random Projects\Harish-Fish"
+   python -m venv venv
+   .\venv\Scripts\Activate.ps1
+   ```
+
+2. Install dependencies (with your shell **in the project root**):
+
+   ```powershell
+   pip install -r requirements.txt
+   ```
 
 3. Copy environment variables:
 
-```bash
-copy .env.example .env
-```
+   ```powershell
+   copy .env.example .env
+   ```
+   Then set `STOCKFISH_PATH` in `.env` if needed (e.g. `stockfish/stockfish-windows-x86-64-avx2.exe`).
 
-4. Start the app:
+4. Start the app (still from the project root):
 
-```bash
-uvicorn app.main:app --reload
-```
+   ```powershell
+   uvicorn app.main:app --reload
+   ```
+
+   **Or** use the helper script (activates venv, installs deps, then starts the app):
+
+   ```powershell
+   .\run.ps1
+   ```
 
 5. Open the local test page:
 
@@ -114,16 +130,16 @@ Implemented so far:
 - runtime White book controller with permanent out-of-book state
 - Stockfish fallback service with startup and shutdown support
 - bot move arbitration between book and Stockfish
-- simple frontend health/test page
-- test coverage for book generation, book control, and bot move routing
+- FastAPI session API for local testing
+- simple browser frontend for local end-to-end testing
+- test coverage for book generation, book control, bot move routing, and API flow
 
 ## Next Implementation Phase
 
-- connect the bot move service to API/game-session routes
 - add persistent or managed session state
-- improve frontend board interaction for local testing
 - calibrate Stockfish fallback strength against your target style
 - add richer API request/response models
+- optionally add drag-and-drop board interaction or richer move highlighting
 
 ## Demo Commands
 
@@ -144,3 +160,35 @@ Play Black against the bot in the terminal:
 ```bash
 python scripts\demo_play_vs_bot.py
 ```
+
+## Browser Testing
+
+The local frontend is served from the same FastAPI app at the root URL:
+
+```text
+http://127.0.0.1:8000/
+```
+
+Basic browser flow:
+
+1. Start the backend with Uvicorn.
+2. Open the root URL in your browser.
+3. Click `Create New Game`.
+4. Leave `Bot makes White's first move automatically` checked if you want the normal White-bot flow.
+5. Enter Black moves in UCI format such as `e7e5`, or click a source square and destination square on the board to fill the move box.
+6. Click `Play Black Move`.
+7. Click `Request Bot White Move`.
+8. Repeat to continue testing multiple plies.
+
+The page shows:
+
+- current board
+- move list
+- latest bot move
+- whether the bot move came from `book` or `stockfish`
+- book probability used
+- current FEN
+
+Important local note:
+
+- If your generated opening book is empty and `STOCKFISH_PATH` is not configured, the bot will not be able to produce a White move outside the book.
